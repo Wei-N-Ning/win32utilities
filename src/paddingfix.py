@@ -1,3 +1,7 @@
+"""
+To reformat the file path, changing the number postfix from v1, v2 to v001, v002 etc...
+"""
+
 __author__ = 'wei ning'
 
 import os
