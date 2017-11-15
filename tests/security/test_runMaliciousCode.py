@@ -1,3 +1,16 @@
+"""
+spec:
+
+          4 bytes                     4 bytes
+length of module buffer | length of decipher function buffer | cipher function buffer | module buffer
+
+
+examples:
+
+_buf = resources.read(file_path)
+_buf[0:4]
+"""
+
 
 import json
 import marshal
