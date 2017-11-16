@@ -1,6 +1,14 @@
 
+import itertools
+import os
 import marshal
+import re
+import StringIO
+import shutil
 import types
+import zipfile
+import subprocess
+import shlex
 import zlib
 
 
