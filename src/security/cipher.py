@@ -4,12 +4,10 @@ import os
 import marshal
 import re
 import StringIO
-import shutil
 import types
 import zipfile
-import subprocess
-import shlex
 import zlib
+import pwd
 
 
 def _caesar(s, key_, encode=True):
@@ -66,3 +64,36 @@ def decipher(s, key_=0x13):
     """
 
     return types.FunctionType(marshal.loads(zlib.decompress(_caesar(s, key_, encode=False))), globals(), '_f')
+
+
+def package_to_buf(dir_path, key_=0x13):
+    """
+    If dir_path is /x/y/z
+    the top-level directory in the zip archive will be z
+    so that /x/y/z/onefile.ext becomes z/onefile.ext
+
+    Args:
+        dir_path:
+        key_:
+
+    Returns:
+        str
+    """
+    dir_path = re.sub('/+$', '', dir_path)
+    si = StringIO.StringIO()
+    ziph = zipfile.ZipFile(si, 'w', zipfile.ZIP_DEFLATED, False)
+    for root, dirs, files in os.walk(dir_path):
+        for f in itertools.chain(dirs, files):
+            full_path = os.path.join(root, f)
+            rel_path = full_path.replace(dir_path, '')
+            ziph.write(full_path, arcname=rel_path)
+    ziph.close()
+    cbuf = _caesar(si.getvalue(), key_, encode=True)
+    return cbuf
+
+
+def buf_to_package(cbuf, file_path, key_=0x13):
+    buf = _caesar(cbuf, key_, encode=False)
+    with open(file_path, 'wb') as fp:
+        fp.write(buf)
+

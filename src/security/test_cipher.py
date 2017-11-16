@@ -1,6 +1,7 @@
 
 import os
 import unittest
+import zipimport
 
 import cipher
 
@@ -23,3 +24,16 @@ class TestCipherFunction(unittest.TestCase):
         f = cipher.decipher(buf, key_=0x19)
         result = f()
         self.assertTrue(result)
+
+
+class TestPackageToBuffer(unittest.TestCase):
+
+    def test_roundTrip(self):
+        cbuf = cipher.package_to_buf(file_path('testdata'))
+        p = '/tmp/testdata.zip'
+        cipher.buf_to_package(cbuf, p)
+        imp = zipimport.zipimporter(p)
+        self.assertTrue(imp.load_module('dd'))
+        self.assertTrue(imp.load_module('dd/components'))
+        self.assertTrue(imp.load_module('dd/components/xlib'))
+
